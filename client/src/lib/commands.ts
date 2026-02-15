@@ -4,30 +4,36 @@
  * Design Philosophy:
  * - Modular command structure for easy extension
  * - Async support for future API integrations
- * - Consistent output formatting with colors
+ * - Hyper theme colors and formatting
  * - Error handling with descriptive messages
  */
 
+import {
+  type FormattedOutput,
+  text,
+  createHeader,
+  createEntry,
+  createLink,
+  createListItem,
+  createBullet,
+  combine,
+} from './formatting';
+
 interface CommandOutput {
-  content: string;
+  content: string | FormattedOutput;
   error: boolean;
 }
 
 const PORTFOLIO_DATA = {
   name: 'Vinícius Manoel Ribeiro',
   email: 'viniciusmanoel@duck.com',
-  about: `
-[CYAN]╔════════════════════════════════════════════════════════════╗[/CYAN]
-[CYAN]║                    ABOUT ME                                ║[/CYAN]
-[CYAN]╚════════════════════════════════════════════════════════════╝[/CYAN]
-
-[WHITE]I'm a passionate full-stack developer with expertise in modern
+  about: {
+    description: `I'm a passionate full-stack developer with expertise in modern
 web technologies. I love creating elegant solutions to complex
-problems and building beautiful, performant applications.[/WHITE]
-
-[CYAN]Skills:[/CYAN] [WHITE]React, TypeScript, Node.js, Python, DevOps[/WHITE]
-[CYAN]Location:[/CYAN] [WHITE]São Paulo, Brazil[/WHITE]
-  `,
+problems and building beautiful, performant applications.`,
+    skills: 'React, TypeScript, Node.js, Python, DevOps',
+    location: 'São Paulo, Brazil',
+  },
   social: {
     github: 'https://github.com/vncsmnl',
     linkedin: 'https://linkedin.com/in/vncsmnl',
@@ -63,157 +69,161 @@ problems and building beautiful, performant applications.[/WHITE]
 
 const commands: Record<string, (args: string[]) => Promise<CommandOutput>> = {
   help: async () => {
-    const helpText = `
-[CYAN]╔════════════════════════════════════════════════════════════╗[/CYAN]
-[CYAN]║                    AVAILABLE COMMANDS                      ║[/CYAN]
-[CYAN]╚════════════════════════════════════════════════════════════╝[/CYAN]
-
-[CYAN]about[/CYAN]        [WHITE]- Learn about me[/WHITE]
-[CYAN]blog[/CYAN]         [WHITE]- View my blog posts[/WHITE]
-[CYAN]social[/CYAN]       [WHITE]- Display social network links[/WHITE]
-[CYAN]projects[/CYAN]     [WHITE]- View my coding projects[/WHITE]
-[CYAN]stack[/CYAN]        [WHITE]- View my current tech stack[/WHITE]
-[CYAN]videos[/CYAN]       [WHITE]- View my YouTube videos[/WHITE]
-[CYAN]podcasts[/CYAN]     [WHITE]- View my Spotify podcast episodes[/WHITE]
-[CYAN]resume[/CYAN]       [WHITE]- Get my online resume link[/WHITE]
-[CYAN]history[/CYAN]      [WHITE]- View command history[/WHITE]
-[CYAN]email[/CYAN]        [WHITE]- See my email address[/WHITE]
-[CYAN]clear[/CYAN]        [WHITE]- Clear terminal screen[/WHITE]
-[CYAN]reload[/CYAN]       [WHITE]- Reload page and clear history[/WHITE]
-[CYAN]help[/CYAN]         [WHITE]- Show this help message[/WHITE]
-
-[WHITE]Type any command to execute it.[/WHITE]
-    `;
-    return { content: helpText, error: false };
+    const output = combine(
+      createHeader('AVAILABLE COMMANDS'),
+      [
+        text.primary('about       ', true),
+        text.default('- Learn about me\n'),
+        text.primary('blog        ', true),
+        text.default('- View my blog posts\n'),
+        text.primary('social      ', true),
+        text.default('- Display social network links\n'),
+        text.primary('projects    ', true),
+        text.default('- View my coding projects\n'),
+        text.primary('stack       ', true),
+        text.default('- View my current tech stack\n'),
+        text.primary('videos      ', true),
+        text.default('- View my YouTube videos\n'),
+        text.primary('podcasts    ', true),
+        text.default('- View my Spotify podcast episodes\n'),
+        text.primary('resume      ', true),
+        text.default('- Get my online resume link\n'),
+        text.primary('history     ', true),
+        text.default('- View command history\n'),
+        text.primary('email       ', true),
+        text.default('- See my email address\n'),
+        text.primary('clear       ', true),
+        text.default('- Clear terminal screen\n'),
+        text.primary('reload      ', true),
+        text.default('- Reload page and clear history\n'),
+        text.primary('help        ', true),
+        text.default('- Show this help message\n'),
+        text.default('\n'),
+        text.muted('Type any command to execute it.\n'),
+      ]
+    );
+    return { content: output, error: false };
   },
 
   about: async () => {
-    return { content: PORTFOLIO_DATA.about, error: false };
+    const output = combine(
+      createHeader('ABOUT ME'),
+      [
+        text.default(PORTFOLIO_DATA.about.description + '\n\n'),
+        text.primary('Skills: ', true),
+        text.accent(PORTFOLIO_DATA.about.skills + '\n'),
+        text.primary('Location: ', true),
+        text.default(PORTFOLIO_DATA.about.location + '\n'),
+      ]
+    );
+    return { content: output, error: false };
   },
 
   email: async () => {
-    return {
-      content: `[CYAN]📧 Email:[/CYAN] [MAGENTA]${PORTFOLIO_DATA.email}[/MAGENTA]`,
-      error: false,
-    };
+    const output = [
+      text.primary('📧 Email: ', true),
+      text.secondary(PORTFOLIO_DATA.email),
+      text.default('\n'),
+    ];
+    return { content: output, error: false };
   },
 
   social: async () => {
-    const socialText = `
-[CYAN]╔════════════════════════════════════════════════════════════╗[/CYAN]
-[CYAN]║                    SOCIAL NETWORKS                         ║[/CYAN]
-[CYAN]╚════════════════════════════════════════════════════════════╝[/CYAN]
-
-[CYAN]GitHub:[/CYAN]      [MAGENTA]${PORTFOLIO_DATA.social.github}[/MAGENTA]
-[CYAN]LinkedIn:[/CYAN]    [MAGENTA]${PORTFOLIO_DATA.social.linkedin}[/MAGENTA]
-[CYAN]Twitter:[/CYAN]     [MAGENTA]${PORTFOLIO_DATA.social.twitter}[/MAGENTA]
-[CYAN]Portfolio:[/CYAN]   [MAGENTA]${PORTFOLIO_DATA.social.portfolio}[/MAGENTA]
-    `;
-    return { content: socialText, error: false };
+    const output = combine(
+      createHeader('SOCIAL NETWORKS'),
+      createLink('GitHub:', PORTFOLIO_DATA.social.github),
+      createLink('LinkedIn:', PORTFOLIO_DATA.social.linkedin),
+      createLink('Twitter:', PORTFOLIO_DATA.social.twitter),
+      createLink('Portfolio:', PORTFOLIO_DATA.social.portfolio)
+    );
+    return { content: output, error: false };
   },
 
   projects: async () => {
-    let projectText = `
-[CYAN]╔════════════════════════════════════════════════════════════╗[/CYAN]
-[CYAN]║                    MY PROJECTS                             ║[/CYAN]
-[CYAN]╚════════════════════════════════════════════════════════════╝[/CYAN]
-`;
-    PORTFOLIO_DATA.projects.forEach((project, idx) => {
-      projectText += `
-[CYAN][${idx + 1}] ${project.name}[/CYAN]
-[WHITE]    ${project.description}[/WHITE]
-[MAGENTA]    Link: ${project.link}[/MAGENTA]
-`;
-    });
-    return { content: projectText, error: false };
+    const projectItems = PORTFOLIO_DATA.projects.flatMap((project, idx) =>
+      createListItem(idx + 1, project.name, project.description, project.link)
+    );
+
+    const output = combine(
+      createHeader('MY PROJECTS'),
+      projectItems
+    );
+    return { content: output, error: false };
   },
 
   stack: async () => {
-    let stackText = `
-[CYAN]╔════════════════════════════════════════════════════════════╗[/CYAN]
-[CYAN]║                    TECH STACK                              ║[/CYAN]
-[CYAN]╚════════════════════════════════════════════════════════════╝[/CYAN]
-`;
-    PORTFOLIO_DATA.stack.forEach((item) => {
-      stackText += `
-[CYAN]▸ ${item.category}:[/CYAN] [WHITE]${item.tech}[/WHITE]`;
-    });
-    return { content: stackText, error: false };
+    const stackItems = PORTFOLIO_DATA.stack.flatMap((item) =>
+      createBullet(item.category, item.tech)
+    );
+
+    const output = combine(
+      createHeader('TECH STACK'),
+      stackItems
+    );
+    return { content: output, error: false };
   },
 
   blog: async () => {
-    return {
-      content: `
-[CYAN]╔════════════════════════════════════════════════════════════╗[/CYAN]
-[CYAN]║                    MY BLOG                                 ║[/CYAN]
-[CYAN]╚════════════════════════════════════════════════════════════╝[/CYAN]
-
-[WHITE]Coming soon! Check back later for articles about web
-development, best practices, and tech insights.[/WHITE]
-
-[CYAN]Blog:[/CYAN] [MAGENTA]https://vini.thedev.id/blog/[/MAGENTA]
-      `,
-      error: false,
-    };
+    const output = combine(
+      createHeader('MY BLOG'),
+      [
+        text.default('Coming soon! Check back later for articles about web\n'),
+        text.default('development, best practices, and tech insights.\n\n'),
+        text.primary('Blog: ', true),
+        text.secondary('https://vini.thedev.id/blog/\n'),
+      ]
+    );
+    return { content: output, error: false };
   },
 
   videos: async () => {
-    return {
-      content: `
-[CYAN]╔════════════════════════════════════════════════════════════╗[/CYAN]
-[CYAN]║                    YOUTUBE VIDEOS                          ║[/CYAN]
-[CYAN]╚════════════════════════════════════════════════════════════╝[/CYAN]
-
-[WHITE]Coming soon! Subscribe to my channel for tutorials and
-tech content.[/WHITE]
-
-[CYAN]YouTube:[/CYAN] [MAGENTA]https://youtube.com/@vncsmnl[/MAGENTA]
-      `,
-      error: false,
-    };
+    const output = combine(
+      createHeader('YOUTUBE VIDEOS'),
+      [
+        text.default('Coming soon! Subscribe to my channel for tutorials and\n'),
+        text.default('tech content.\n\n'),
+        text.primary('YouTube: ', true),
+        text.secondary('https://youtube.com/@vncsmnl\n'),
+      ]
+    );
+    return { content: output, error: false };
   },
 
   podcasts: async () => {
-    return {
-      content: `
-[CYAN]╔════════════════════════════════════════════════════════════╗[/CYAN]
-[CYAN]║                    SPOTIFY PODCASTS                        ║[/CYAN]
-[CYAN]╚════════════════════════════════════════════════════════════╝[/CYAN]
-
-[WHITE]Coming soon! Listen to my podcast episodes on Spotify.[/WHITE]
-
-[CYAN]Spotify:[/CYAN] [MAGENTA]https://spotify.com/vncsmnl[/MAGENTA]
-      `,
-      error: false,
-    };
+    const output = combine(
+      createHeader('SPOTIFY PODCASTS'),
+      [
+        text.default('Coming soon! Listen to my podcast episodes on Spotify.\n\n'),
+        text.primary('Spotify: ', true),
+        text.secondary('https://spotify.com/vncsmnl\n'),
+      ]
+    );
+    return { content: output, error: false };
   },
 
   resume: async () => {
-    return {
-      content: `
-[CYAN]╔════════════════════════════════════════════════════════════╗[/CYAN]
-[CYAN]║                    RESUME                                  ║[/CYAN]
-[CYAN]╚════════════════════════════════════════════════════════════╝[/CYAN]
-
-[WHITE]Download my resume:[/WHITE] [MAGENTA]${PORTFOLIO_DATA.resume}[/MAGENTA]
-
-[WHITE]Or view it online at:[/WHITE] [MAGENTA]https://vini.thedev.id[/MAGENTA]
-      `,
-      error: false,
-    };
+    const output = combine(
+      createHeader('RESUME'),
+      [
+        text.primary('Download my resume: ', true),
+        text.secondary(PORTFOLIO_DATA.resume + '\n\n'),
+        text.primary('Or view it online at: ', true),
+        text.secondary('https://vini.thedev.id\n'),
+      ]
+    );
+    return { content: output, error: false };
   },
 
   history: async () => {
-    return {
-      content: `
-[CYAN]╔════════════════════════════════════════════════════════════╗[/CYAN]
-[CYAN]║                    COMMAND HISTORY                         ║[/CYAN]
-[CYAN]╚════════════════════════════════════════════════════════════╝[/CYAN]
-
-[WHITE]Use arrow keys (↑ ↓) to navigate through command history.[/WHITE]
-      `,
-      error: false,
-    };
+    const output = combine(
+      createHeader('COMMAND HISTORY'),
+      [
+        text.default('Use arrow keys '),
+        text.primary('(↑ ↓)', true),
+        text.default(' to navigate through command history.\n'),
+      ]
+    );
+    return { content: output, error: false };
   },
 
   clear: async () => {
@@ -246,7 +256,11 @@ export async function getCommandOutput(input: string): Promise<CommandOutput> {
       return await commands[command](args);
     } catch (error) {
       return {
-        content: `[ERROR]Error executing command: ${error instanceof Error ? error.message : 'Unknown error'}[/ERROR]`,
+        content: [
+          text.error('Error executing command: '),
+          text.error(error instanceof Error ? error.message : 'Unknown error'),
+          text.default('\n'),
+        ],
         error: true,
       };
     }
@@ -254,7 +268,12 @@ export async function getCommandOutput(input: string): Promise<CommandOutput> {
 
   // Unknown command
   return {
-    content: `[ERROR]Command not found: ${command}. Type "help" for available commands.[/ERROR]`,
+    content: [
+      text.error(`Command not found: ${command}. `),
+      text.default('Type '),
+      text.primary('help', true),
+      text.default(' for available commands.\n'),
+    ],
     error: true,
   };
 }

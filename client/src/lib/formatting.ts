@@ -1,102 +1,174 @@
 /**
- * Terminal Formatting System
+ * Terminal Formatting System - Hyper Theme
  * 
- * Provides colored output formatting for terminal commands
- * Colors follow Hyper theme: cyan for titles, magenta for links, white for descriptions
+ * Object-based formatting system for terminal output
+ * Inspired by Hyper Terminal aesthetics with vibrant colors
  */
 
-export interface FormattedLine {
+export type TerminalColor =
+  | 'primary'    // Bright cyan (#00D9FF) - titles, headers
+  | 'secondary'  // Bright magenta (#FF2E88) - links, highlights  
+  | 'accent'     // Bright green (#50FA7B) - success messages
+  | 'warning'    // Bright yellow (#F1FA8C) - warnings
+  | 'error'      // Bright red (#FF5555) - errors
+  | 'muted'      // Gray (#6272A4) - comments, subtle text
+  | 'default';   // White (#F8F8F2) - default text
+
+export interface TextSegment {
   text: string;
-  color?: 'cyan' | 'magenta' | 'white' | 'error' | 'success';
+  color?: TerminalColor;
+  bold?: boolean;
 }
 
-export interface FormattedOutput {
-  lines: FormattedLine[];
-}
+export type FormattedOutput = TextSegment[];
 
 /**
- * Parse formatted output with color codes
- * Format: [COLOR]text[/COLOR] or use helper functions below
+ * Hyper Theme Color Helpers
  */
-export function parseColoredOutput(text: string): FormattedLine[] {
-  const lines = text.split('\n');
-  return lines.map(line => {
-    // Check for color codes
-    const cyanMatch = line.match(/\[CYAN\](.*?)\[\/CYAN\]/);
-    const magentaMatch = line.match(/\[MAGENTA\](.*?)\[\/MAGENTA\]/);
-    const whiteMatch = line.match(/\[WHITE\](.*?)\[\/WHITE\]/);
-    const errorMatch = line.match(/\[ERROR\](.*?)\[\/ERROR\]/);
-    const successMatch = line.match(/\[SUCCESS\](.*?)\[\/SUCCESS\]/);
+export const text = {
+  /** Bright cyan - for titles and headers */
+  primary: (str: string, bold = false): TextSegment => ({
+    text: str,
+    color: 'primary',
+    bold
+  }),
 
-    if (cyanMatch) {
-      return { text: cyanMatch[1], color: 'cyan' };
-    } else if (magentaMatch) {
-      return { text: magentaMatch[1], color: 'magenta' };
-    } else if (whiteMatch) {
-      return { text: whiteMatch[1], color: 'white' };
-    } else if (errorMatch) {
-      return { text: errorMatch[1], color: 'error' };
-    } else if (successMatch) {
-      return { text: successMatch[1], color: 'success' };
-    }
+  /** Bright magenta - for links and highlights */
+  secondary: (str: string, bold = false): TextSegment => ({
+    text: str,
+    color: 'secondary',
+    bold
+  }),
 
-    return { text: line, color: 'white' };
-  });
-}
+  /** Bright green - for success messages */
+  accent: (str: string, bold = false): TextSegment => ({
+    text: str,
+    color: 'accent',
+    bold
+  }),
 
-/**
- * Helper functions for creating colored output
- */
-export const format = {
-  title: (text: string) => `[CYAN]${text}[/CYAN]`,
-  link: (text: string) => `[MAGENTA]${text}[/MAGENTA]`,
-  description: (text: string) => `[WHITE]${text}[/WHITE]`,
-  error: (text: string) => `[ERROR]${text}[/ERROR]`,
-  success: (text: string) => `[SUCCESS]${text}[/SUCCESS]`,
+  /** Bright yellow - for warnings */
+  warning: (str: string, bold = false): TextSegment => ({
+    text: str,
+    color: 'warning',
+    bold
+  }),
+
+  /** Bright red - for errors */
+  error: (str: string, bold = false): TextSegment => ({
+    text: str,
+    color: 'error',
+    bold
+  }),
+
+  /** Gray - for muted text */
+  muted: (str: string, bold = false): TextSegment => ({
+    text: str,
+    color: 'muted',
+    bold
+  }),
+
+  /** White - default text color */
+  default: (str: string, bold = false): TextSegment => ({
+    text: str,
+    color: 'default',
+    bold
+  }),
 };
 
 /**
- * Create a formatted section with title and content
+ * Convert FormattedOutput to plain string for display
  */
-export function createSection(title: string, content: string[]): string {
-  const lines = [
-    format.title(`╔════════════════════════════════════════════════════════════╗`),
-    format.title(`║ ${title.padEnd(58)} ║`),
-    format.title(`╚════════════════════════════════════════════════════════════╝`),
-    ...content,
+export function formatToString(output: FormattedOutput): string {
+  return output.map(segment => segment.text).join('');
+}
+
+/**
+ * Create a boxed header in Hyper style
+ */
+export function createHeader(title: string): FormattedOutput {
+  const boxWidth = 62;
+  const topLine = '╔' + '═'.repeat(boxWidth) + '╗';
+  const bottomLine = '╚' + '═'.repeat(boxWidth) + '╝';
+  const paddedTitle = title.toUpperCase().padStart((boxWidth + title.length) / 2).padEnd(boxWidth);
+  const middleLine = `║ ${paddedTitle} ║`;
+
+  return [
+    text.primary(topLine),
+    text.default('\n'),
+    text.primary(middleLine),
+    text.default('\n'),
+    text.primary(bottomLine),
+    text.default('\n\n'),
   ];
-  return lines.join('\n');
 }
 
 /**
- * Create a formatted project entry
+ * Create a labeled entry (key: value)
  */
-export function createProjectEntry(
+export function createEntry(label: string, value: string, valueColor: TerminalColor = 'default'): FormattedOutput {
+  return [
+    text.primary(label + ': ', true),
+    { text: value, color: valueColor },
+    text.default('\n'),
+  ];
+}
+
+/**
+ * Create a link entry
+ */
+export function createLink(label: string, url: string): FormattedOutput {
+  return [
+    text.primary(label.padEnd(14)),
+    text.secondary(url),
+    text.default('\n'),
+  ];
+}
+
+/**
+ * Create a numbered list item
+ */
+export function createListItem(
   number: number,
-  name: string,
-  description: string,
-  link: string
-): string {
-  return [
-    format.title(`[${number}] ${name}`),
-    format.description(`    ${description}`),
-    format.link(`    Link: ${link}`),
-  ].join('\n');
+  title: string,
+  description?: string,
+  link?: string
+): FormattedOutput {
+  const output: FormattedOutput = [
+    text.default('\n'),
+    text.primary(`[${number}] `, true),
+    text.primary(title, true),
+    text.default('\n'),
+  ];
+
+  if (description) {
+    output.push(text.muted('    ' + description));
+    output.push(text.default('\n'));
+  }
+
+  if (link) {
+    output.push(text.muted('    🔗 '));
+    output.push(text.secondary(link));
+    output.push(text.default('\n'));
+  }
+
+  return output;
 }
 
 /**
- * Create a formatted tech stack entry
+ * Create a bullet point item
  */
-export function createTechEntry(category: string, technologies: string): string {
-  return format.description(`▸ ${category}: ${technologies}`);
+export function createBullet(label: string, value: string): FormattedOutput {
+  return [
+    text.primary('  ▸ ' + label + ': ', true),
+    text.default(value),
+    text.default('\n'),
+  ];
 }
 
 /**
- * Create a formatted social link entry
+ * Combine multiple formatted outputs
  */
-export function createSocialEntry(platform: string, url: string): string {
-  return [
-    format.title(`${platform.padEnd(12)}`),
-    format.link(`${url}`),
-  ].join(' ');
+export function combine(...outputs: FormattedOutput[]): FormattedOutput {
+  return outputs.flat();
 }

@@ -1,14 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { getCommandOutput } from '@/lib/commands';
-import { parseColoredOutput } from '@/lib/formatting';
 import { TerminalOutput } from './TerminalOutput';
+import type { FormattedOutput } from '@/lib/formatting';
 
 interface TerminalLine {
   id: string;
   type: 'command' | 'output' | 'error' | 'info' | 'welcome';
-  content: string;
+  content: string | FormattedOutput;
   command?: string;
-  displayedContent?: string;
+  displayedContent?: string | FormattedOutput;
   isComplete?: boolean;
 }
 
@@ -56,13 +56,39 @@ export default function Terminal() {
   }, [lines]);
 
   // Render output character by character
-  const renderOutputLine = async (lineId: string, content: string, type: 'output' | 'error' | 'info') => {
+  const renderOutputLine = async (lineId: string, content: string | FormattedOutput, type: 'output' | 'error' | 'info') => {
     const lines_copy = [...lines];
     const lineIndex = lines_copy.findIndex(l => l.id === lineId);
 
     if (lineIndex === -1) return;
 
-    // Split content into lines for proper rendering
+    // For FormattedOutput (array of segments), display all at once with animation
+    if (Array.isArray(content)) {
+      let displayedSegments: FormattedOutput = [];
+
+      for (let i = 0; i < content.length; i++) {
+        displayedSegments.push(content[i]);
+
+        const updatedLineIndex = lines_copy.findIndex(l => l.id === lineId);
+        if (updatedLineIndex !== -1) {
+          lines_copy[updatedLineIndex].displayedContent = [...displayedSegments];
+          setLines([...lines_copy]);
+        }
+
+        // Small delay for smooth animation
+        await new Promise(resolve => setTimeout(resolve, 20));
+      }
+
+      // Mark as complete
+      const completedLineIndex = lines_copy.findIndex(l => l.id === lineId);
+      if (completedLineIndex !== -1) {
+        lines_copy[completedLineIndex].isComplete = true;
+        setLines([...lines_copy]);
+      }
+      return;
+    }
+
+    // For string content, use the old character-by-character rendering
     const contentLines = content.split('\n');
 
     for (let lineNum = 0; lineNum < contentLines.length; lineNum++) {
@@ -217,7 +243,7 @@ export default function Terminal() {
   };
 
   const getUserInfo = () => {
-    return 'vinic@vncsmnl';
+    return 'guest@user';
   };
 
   return (
