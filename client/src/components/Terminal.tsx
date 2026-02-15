@@ -3,6 +3,10 @@ import { getCommandOutput } from '@/lib/commands';
 import { TerminalOutput } from './TerminalOutput';
 import type { FormattedOutput } from '@/lib/formatting';
 
+// Typing animation speed in milliseconds per character
+// Lower values = faster typing (1-3ms for fast, realistic typing)
+const TYPING_SPEED_MS = 2;
+
 interface TerminalLine {
   id: string;
   type: 'command' | 'output' | 'error' | 'info' | 'welcome';
@@ -57,81 +61,91 @@ export default function Terminal() {
 
   // Render output character by character
   const renderOutputLine = async (lineId: string, content: string | FormattedOutput, type: 'output' | 'error' | 'info') => {
-    const lines_copy = [...lines];
-    const lineIndex = lines_copy.findIndex(l => l.id === lineId);
-
-    if (lineIndex === -1) return;
-
-    // For FormattedOutput (array of segments), display all at once with animation
+    // For FormattedOutput (array of segments), render character by character through segments
     if (Array.isArray(content)) {
       let displayedSegments: FormattedOutput = [];
+      let currentSegmentIndex = 0;
+      let currentCharIndex = 0;
 
-      for (let i = 0; i < content.length; i++) {
-        displayedSegments.push(content[i]);
+      while (currentSegmentIndex < content.length) {
+        const currentSegment = content[currentSegmentIndex];
+        const segmentText = currentSegment.text;
 
-        const updatedLineIndex = lines_copy.findIndex(l => l.id === lineId);
-        if (updatedLineIndex !== -1) {
-          lines_copy[updatedLineIndex].displayedContent = [...displayedSegments];
-          setLines([...lines_copy]);
+        // If we're starting a new segment, add it with empty text
+        if (currentCharIndex === 0) {
+          displayedSegments.push({
+            ...currentSegment,
+            text: '',
+          });
         }
 
-        // Small delay for smooth animation
-        await new Promise(resolve => setTimeout(resolve, 20));
+        // Add one character at a time to the current segment
+        if (currentCharIndex < segmentText.length) {
+          displayedSegments[displayedSegments.length - 1].text += segmentText[currentCharIndex];
+          currentCharIndex++;
+
+          // Update the displayed content
+          setLines(prevLines => {
+            const updatedLines = [...prevLines];
+            const lineIndex = updatedLines.findIndex(l => l.id === lineId);
+            if (lineIndex !== -1) {
+              updatedLines[lineIndex].displayedContent = [...displayedSegments];
+            }
+            return updatedLines;
+          });
+
+          // Typing delay for realistic effect
+          await new Promise(resolve => setTimeout(resolve, TYPING_SPEED_MS));
+        }
+
+        // Move to next segment when current is complete
+        if (currentCharIndex >= segmentText.length) {
+          currentSegmentIndex++;
+          currentCharIndex = 0;
+        }
       }
 
       // Mark as complete
-      const completedLineIndex = lines_copy.findIndex(l => l.id === lineId);
-      if (completedLineIndex !== -1) {
-        lines_copy[completedLineIndex].isComplete = true;
-        setLines([...lines_copy]);
-      }
+      setLines(prevLines => {
+        const updatedLines = [...prevLines];
+        const lineIndex = updatedLines.findIndex(l => l.id === lineId);
+        if (lineIndex !== -1) {
+          updatedLines[lineIndex].isComplete = true;
+        }
+        return updatedLines;
+      });
       return;
     }
 
-    // For string content, use the old character-by-character rendering
-    const contentLines = content.split('\n');
+    // For string content, render character by character
+    let displayedContent = '';
+    const contentStr = content as string;
 
-    for (let lineNum = 0; lineNum < contentLines.length; lineNum++) {
-      const currentLine = contentLines[lineNum];
-      const targetLineId = lineNum === 0 ? lineId : `${lineId}-${lineNum}`;
-      const targetLineIndex = lineNum === 0 ? lineIndex : lines_copy.length - 1;
+    for (let i = 0; i < contentStr.length; i++) {
+      displayedContent += contentStr[i];
 
-      // Add new line to lines array if this is not the first line
-      if (lineNum > 0) {
-        lines_copy.push({
-          id: targetLineId,
-          type,
-          content: currentLine,
-          displayedContent: '',
-          isComplete: false,
-        });
-        setLines([...lines_copy]);
-      }
-
-      // Render character by character for current line
-      let lineDisplayedContent = '';
-      for (let i = 0; i < currentLine.length; i++) {
-        lineDisplayedContent += currentLine[i];
-
-        // Update the appropriate line
-        const updatedLineIndex = lines_copy.findIndex(l => l.id === targetLineId);
-
-        if (updatedLineIndex !== -1) {
-          lines_copy[updatedLineIndex].displayedContent = lineDisplayedContent;
-          setLines([...lines_copy]);
+      setLines(prevLines => {
+        const updatedLines = [...prevLines];
+        const lineIndex = updatedLines.findIndex(l => l.id === lineId);
+        if (lineIndex !== -1) {
+          updatedLines[lineIndex].displayedContent = displayedContent;
         }
+        return updatedLines;
+      });
 
-        // Small delay between characters for typing effect
-        await new Promise(resolve => setTimeout(resolve, 15));
-      }
-
-      // Mark line as complete
-      const completedLineIndex = lines_copy.findIndex(l => l.id === targetLineId);
-      if (completedLineIndex !== -1) {
-        lines_copy[completedLineIndex].isComplete = true;
-        setLines([...lines_copy]);
-      }
+      // Typing delay for realistic effect
+      await new Promise(resolve => setTimeout(resolve, TYPING_SPEED_MS));
     }
+
+    // Mark as complete
+    setLines(prevLines => {
+      const updatedLines = [...prevLines];
+      const lineIndex = updatedLines.findIndex(l => l.id === lineId);
+      if (lineIndex !== -1) {
+        updatedLines[lineIndex].isComplete = true;
+      }
+      return updatedLines;
+    });
   };
 
   const handleCommand = async (command: string) => {
