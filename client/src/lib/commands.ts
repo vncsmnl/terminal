@@ -8,6 +8,7 @@
  * - Error handling with descriptive messages
  */
 
+import { create } from 'domain';
 import {
   type FormattedOutput,
   text,
@@ -39,6 +40,7 @@ problems and building beautiful, performant applications.`,
     linkedin: 'https://linkedin.com/in/vncsmnl',
     twitter: 'https://twitter.com/vncsmnl',
     portfolio: 'https://vini.thedev.id/',
+    linktree: 'https://vinicius.is-a.dev/',
   },
   projects: [
     {
@@ -134,7 +136,8 @@ const commands: Record<string, (args: string[]) => Promise<CommandOutput>> = {
       createLink('GitHub:', PORTFOLIO_DATA.social.github),
       createLink('LinkedIn:', PORTFOLIO_DATA.social.linkedin),
       createLink('Twitter:', PORTFOLIO_DATA.social.twitter),
-      createLink('Portfolio:', PORTFOLIO_DATA.social.portfolio)
+      createLink('Portfolio:', PORTFOLIO_DATA.social.portfolio),
+      createLink('Linktree:', PORTFOLIO_DATA.social.linktree)
     );
     return { content: output, error: false };
   },

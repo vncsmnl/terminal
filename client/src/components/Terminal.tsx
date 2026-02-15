@@ -135,7 +135,7 @@ export default function Terminal() {
   };
 
   const handleCommand = async (command: string) => {
-    if (!command.trim()) return;
+    if (!command.trim() || isProcessing) return;
 
     // Add command to history
     setHistory([...history, command]);
@@ -253,21 +253,20 @@ export default function Terminal() {
         {lines.map((line) => (
           <TerminalOutput key={line.id} line={line} />
         ))}
-      </div>
 
-      {/* Input area */}
-      <div className="terminal-input-wrapper">
-        <span className="terminal-prompt">{getUserInfo()} ~{'>'}  </span>
-        <input
-          ref={inputRef}
-          type="text"
-          className="terminal-input"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          disabled={isProcessing}
-          autoFocus
-        />
+        {/* Input area */}
+        <div className="terminal-input-wrapper">
+          <span className="terminal-prompt">{getUserInfo()} ~{'>'}  </span>
+          <input
+            ref={inputRef}
+            type="text"
+            className="terminal-input"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            autoFocus
+          />
+        </div>
       </div>
     </div>
   );

@@ -91,7 +91,6 @@ export function TerminalOutput({ line }: TerminalOutputProps) {
           {typeof displayedContent === 'string'
             ? renderPlainContent(displayedContent)
             : renderFormattedOutput(displayedContent)}
-          {isAnimating && <span className="terminal-cursor" />}
         </div>
       </div>
     );
@@ -104,7 +103,6 @@ export function TerminalOutput({ line }: TerminalOutputProps) {
           {typeof displayedContent === 'string'
             ? renderPlainContent(displayedContent)
             : renderFormattedOutput(displayedContent)}
-          {isAnimating && <span className="terminal-cursor" />}
         </div>
       </div>
     );
@@ -117,7 +115,6 @@ export function TerminalOutput({ line }: TerminalOutputProps) {
           {typeof displayedContent === 'string'
             ? renderPlainContent(displayedContent)
             : renderFormattedOutput(displayedContent)}
-          {isAnimating && <span className="terminal-cursor" />}
         </div>
       </div>
     );
@@ -130,7 +127,6 @@ export function TerminalOutput({ line }: TerminalOutputProps) {
         {typeof displayedContent === 'string'
           ? renderPlainContent(displayedContent)
           : renderFormattedOutput(displayedContent)}
-        {isAnimating && <span className="terminal-cursor" />}
       </div>
     </div>
   );
