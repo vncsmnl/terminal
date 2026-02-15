@@ -1,0 +1,378 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+  /* Hyper Terminal Theme */
+  --primary: #fff;
+  --primary-foreground: #000;
+  --sidebar-primary: #fff;
+  --sidebar-primary-foreground: #000;
+  --chart-1: #6c71c4;
+  --chart-2: #268bd2;
+  --chart-3: #2aa198;
+  --chart-4: #859900;
+  --chart-5: #b58900;
+  --radius: 0;
+  --background: #000;
+  --foreground: #fff;
+  --card: #1a1a1a;
+  --card-foreground: #fff;
+  --popover: #1a1a1a;
+  --popover-foreground: #fff;
+  --secondary: #6c71c4;
+  --secondary-foreground: #fff;
+  --muted: #555;
+  --muted-foreground: #999;
+  --accent: #ff2e88;
+  --accent-foreground: #fff;
+  --destructive: #ff2e88;
+  --destructive-foreground: #fff;
+  --border: #333;
+  --input: #1a1a1a;
+  --ring: #6c71c4;
+  --sidebar: #000;
+  --sidebar-foreground: #fff;
+  --sidebar-accent: #6c71c4;
+  --sidebar-accent-foreground: #fff;
+  --sidebar-border: #333;
+  --sidebar-ring: #6c71c4;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+    line-height: 1.5;
+  }
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  [type="button"]:not(:disabled),
+  [type="submit"]:not(:disabled),
+  [type="reset"]:not(:disabled),
+  a[href],
+  select:not(:disabled),
+  input[type="checkbox"]:not(:disabled),
+  input[type="radio"]:not(:disabled) {
+    @apply cursor-pointer;
+  }
+}
+
+@layer components {
+  .container {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .flex {
+    min-height: 0;
+    min-width: 0;
+  }
+
+  @media (min-width: 640px) {
+    .container {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .container {
+      padding-left: 2rem;
+      padding-right: 2rem;
+      max-width: 1280px;
+    }
+  }
+
+  /* Hyper Terminal Styles */
+  .terminal-container {
+    @apply w-full h-screen bg-background text-foreground overflow-hidden flex flex-col;
+    font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+    position: relative;
+    background: linear-gradient(135deg, #000 0%, #0a0a0a 100%);
+  }
+
+  .terminal-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(ellipse at center, transparent 0%, rgba(0, 0, 0, 0.3) 100%);
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  .terminal-header {
+    @apply bg-background border-b border-border px-4 py-2 flex justify-between items-center;
+    border-color: #333;
+  }
+
+  .terminal-header-text {
+    @apply text-xs text-foreground;
+    color: #999;
+  }
+
+  .terminal-content {
+    @apply flex-1 overflow-y-auto px-4 py-4 relative z-0;
+    scrollbar-width: thin;
+    scrollbar-color: #555 #000;
+  }
+
+  .terminal-content::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .terminal-content::-webkit-scrollbar-track {
+    background: #000;
+  }
+
+  .terminal-content::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 0;
+  }
+
+  .terminal-content::-webkit-scrollbar-thumb:hover {
+    background: #777;
+  }
+
+  .terminal-line {
+    @apply mb-1 text-sm;
+    animation: fadeIn 0.3s ease-in;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .terminal-prompt {
+    @apply text-foreground inline;
+    color: #fff;
+  }
+
+  .terminal-command {
+    @apply text-foreground inline ml-1;
+    color: #fff;
+  }
+
+  .terminal-output {
+    @apply text-foreground mt-0 ml-0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    color: #fff;
+  }
+
+  .terminal-output.error {
+    @apply text-accent;
+    color: #ff2e88;
+  }
+
+  .terminal-output.success {
+    @apply text-foreground;
+    color: #fff;
+  }
+
+  .terminal-output.info {
+    @apply text-secondary;
+    color: #6c71c4;
+  }
+
+  .terminal-cursor {
+    @apply inline-block bg-foreground;
+    width: 8px;
+    height: 1em;
+    margin-left: 0;
+    animation: blink 1s infinite;
+    background-color: #fff;
+  }
+
+  @keyframes blink {
+    0%, 49% {
+      opacity: 1;
+    }
+    50%, 100% {
+      opacity: 0;
+    }
+  }
+
+  .terminal-input-wrapper {
+    @apply bg-background border-t border-border px-4 py-2 flex items-center;
+    border-color: #333;
+  }
+
+  .terminal-input {
+    @apply bg-transparent text-foreground outline-none flex-1 ml-1;
+    font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+    font-size: 0.875rem;
+    caret-color: #fff;
+    color: #fff;
+  }
+
+  .terminal-input::placeholder {
+    @apply text-muted;
+    color: #555;
+  }
+
+  .glitch {
+    position: relative;
+  }
+
+  .glitch::before,
+  .glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .glitch::before {
+    animation: glitch-1 0.3s;
+    color: #ff2e88;
+    z-index: -1;
+  }
+
+  .glitch::after {
+    animation: glitch-2 0.3s;
+    color: #6c71c4;
+    z-index: -2;
+  }
+
+  @keyframes glitch-1 {
+    0% {
+      clip-path: rect(0, 900px, 0, 0);
+    }
+    5% {
+      clip-path: rect(10px, 900px, 25px, 0);
+    }
+    10% {
+      clip-path: rect(5px, 900px, 10px, 0);
+    }
+    15% {
+      clip-path: rect(5px, 900px, 20px, 0);
+    }
+    19% {
+      clip-path: rect(15px, 900px, 0, 0);
+    }
+    20% {
+      clip-path: rect(0, 900px, 0, 0);
+    }
+    100% {
+      clip-path: rect(0, 900px, 0, 0);
+    }
+  }
+
+  @keyframes glitch-2 {
+    0% {
+      clip-path: rect(0, 0, 0, 900px);
+    }
+    5% {
+      clip-path: rect(25px, 900px, 10px, 0);
+    }
+    10% {
+      clip-path: rect(10px, 900px, 5px, 0);
+    }
+    15% {
+      clip-path: rect(20px, 900px, 5px, 0);
+    }
+    19% {
+      clip-path: rect(0, 900px, 15px, 0);
+    }
+    20% {
+      clip-path: rect(0, 0, 0, 900px);
+    }
+    100% {
+      clip-path: rect(0, 0, 0, 900px);
+    }
+  }
+
+  .ascii-divider {
+    @apply text-secondary text-xs my-2;
+    color: #6c71c4;
+    letter-spacing: 0.1em;
+  }
+
+  .welcome-text {
+    @apply text-foreground text-sm;
+    color: #fff;
+    line-height: 1.6;
+  }
+
+  .welcome-text .info {
+    color: #6c71c4;
+  }
+
+  /* Color classes for terminal output */
+  .text-cyan-400 {
+    color: #22d3ee;
+  }
+
+  .text-magenta-400 {
+    color: #ff2e88;
+  }
+
+  .text-white {
+    color: #ffffff;
+  }
+
+  .text-red-400 {
+    color: #f87171;
+  }
+
+  .text-green-400 {
+    color: #4ade80;
+  }
+}
