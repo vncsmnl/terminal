@@ -94,6 +94,8 @@ const commands: Record<string, (args: string[]) => Promise<CommandOutput>> = {
         text.default('- View command history\n'),
         text.primary('email       ', true),
         text.default('- See my email address\n'),
+        text.primary('sudo        ', true),
+        text.default('- Execute a command as another user\n'),
         text.primary('clear       ', true),
         text.default('- Clear terminal screen\n'),
         text.primary('reload      ', true),
@@ -227,6 +229,107 @@ const commands: Record<string, (args: string[]) => Promise<CommandOutput>> = {
       ]
     );
     return { content: output, error: false };
+  },
+
+  sudo: async (args: string[]) => {
+    const packages = [
+      'react', 'typescript', 'vite', 'tailwindcss', 'nodejs', 'npm', 'webpack',
+      'babel', 'eslint', 'prettier', 'jest', 'cypress', 'docker', 'kubernetes',
+      'postgresql', 'mongodb', 'redis', 'nginx', 'apache', 'git', 'github-cli',
+      'python', 'pip', 'django', 'flask', 'fastapi', 'express', 'nestjs',
+      'nextjs', 'gatsby', 'nuxt', 'vue', 'angular', 'svelte', 'solid',
+      'prisma', 'graphql', 'apollo', 'trpc', 'zod', 'yup', 'formik',
+      'axios', 'fetch', 'websocket', 'socket.io', 'webrtc', 'pwa',
+      'electron', 'tauri', 'capacitor', 'react-native', 'expo', 'flutter',
+    ];
+
+    // Generate random fake update output
+    const generateUpdateLines = () => {
+      const lines: FormattedOutput = [];
+      const numPackages = Math.floor(Math.random() * 8) + 5; // 5-12 packages
+
+      for (let i = 0; i < numPackages; i++) {
+        const pkg = packages[Math.floor(Math.random() * packages.length)];
+        const oldVersion = `${Math.floor(Math.random() * 5) + 1}.${Math.floor(Math.random() * 20)}.${Math.floor(Math.random() * 10)}`;
+        const newVersion = `${Math.floor(Math.random() * 5) + 1}.${Math.floor(Math.random() * 20)}.${Math.floor(Math.random() * 10)}`;
+        const size = Math.floor(Math.random() * 500) + 50;
+
+        lines.push(
+          text.default('Get:' + (i + 1) + ' '),
+          text.accent('stable/main ', true),
+          text.default(pkg + ' '),
+          text.muted(oldVersion + ' -> '),
+          text.primary(newVersion, true),
+          text.default(' [' + size + ' kB]\n')
+        );
+      }
+
+      const totalSize = Math.floor(Math.random() * 5000) + 1000;
+      const speed = Math.floor(Math.random() * 3000) + 500;
+      const time = Math.floor(totalSize / speed);
+
+      lines.push(
+        text.default('\nFetched '),
+        text.primary(totalSize + ' kB', true),
+        text.default(' in '),
+        text.accent(time + 's', true),
+        text.default(' ('),
+        text.secondary(speed + ' kB/s'),
+        text.default(')\n\n')
+      );
+
+      lines.push(
+        text.default('Reading package lists... '),
+        text.accent('Done\n', true)
+      );
+
+      lines.push(
+        text.default('Building dependency tree... '),
+        text.accent('Done\n', true)
+      );
+
+      lines.push(
+        text.default('Reading state information... '),
+        text.accent('Done\n', true)
+      );
+
+      lines.push(
+        text.accent('\n✓ All packages are up to date!\n', true)
+      );
+
+      return lines;
+    };
+
+    // Detect if it's an update command
+    const fullCommand = args.join(' ').toLowerCase();
+    const isUpdateCommand =
+      fullCommand.includes('update') ||
+      fullCommand.includes('upgrade') ||
+      fullCommand.includes('install') ||
+      args.length === 0;
+
+    if (isUpdateCommand) {
+      const output = combine(
+        [text.primary('[sudo] ', true), text.default('password for user: ')],
+        [text.muted('***************\n\n')],
+        [text.accent('Reading package lists... Done\n', true)],
+        [text.default('Building dependency tree\n')],
+        [text.default('Reading state information... Done\n\n')],
+        generateUpdateLines()
+      );
+
+      return { content: output, error: false };
+    } else {
+      return {
+        content: [
+          text.primary('[sudo] ', true),
+          text.default('password for user: '),
+          text.muted('***************\n\n'),
+          text.error(`sudo: ${args[0]}: command not found\n`),
+        ],
+        error: false,
+      };
+    }
   },
 
   clear: async () => {

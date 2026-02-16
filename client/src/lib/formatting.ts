@@ -84,21 +84,11 @@ export function formatToString(output: FormattedOutput): string {
 }
 
 /**
- * Create a boxed header in Hyper style
+ * Create a simple header
  */
 export function createHeader(title: string): FormattedOutput {
-  const boxWidth = 62;
-  const topLine = '╔' + '═'.repeat(boxWidth) + '╗';
-  const bottomLine = '╚' + '═'.repeat(boxWidth) + '╝';
-  const paddedTitle = title.toUpperCase().padStart((boxWidth + title.length) / 2).padEnd(boxWidth);
-  const middleLine = `║ ${paddedTitle} ║`;
-
   return [
-    text.primary(topLine),
-    text.default('\n'),
-    text.primary(middleLine),
-    text.default('\n'),
-    text.primary(bottomLine),
+    text.primary(title.toUpperCase(), true),
     text.default('\n\n'),
   ];
 }

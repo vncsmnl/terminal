@@ -5,7 +5,7 @@ import type { FormattedOutput } from '@/lib/formatting';
 
 // Typing animation speed in milliseconds per character
 // Lower values = faster typing (1-3ms for fast, realistic typing)
-const TYPING_SPEED_MS = 2;
+const TYPING_SPEED_MS = 0.5;
 
 interface TerminalLine {
   id: string;
