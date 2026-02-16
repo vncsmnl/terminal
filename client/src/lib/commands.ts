@@ -95,6 +95,8 @@ const commands: Record<string, (args: string[]) => Promise<CommandOutput>> = {
         text.default('- View command history\n'),
         text.primary('email       ', true),
         text.default('- See my email address\n'),
+        text.primary('gui         ', true),
+        text.default('- Check my website\n'),
         text.primary('sudo        ', true),
         text.default('- Execute a command as another user\n'),
         text.primary('clear       ', true),
@@ -220,6 +222,21 @@ const commands: Record<string, (args: string[]) => Promise<CommandOutput>> = {
         text.default('Use arrow keys '),
         text.primary('(↑ ↓)', true),
         text.default(' to navigate through command history.\n'),
+      ]
+    );
+    return { content: output, error: false };
+  },
+
+  gui: async () => {
+    // Open website in a new tab
+    window.open(PORTFOLIO_DATA.social.portfolio, '_blank');
+
+    const output = combine(
+      createHeader('OPENING WEBSITE'),
+      [
+        text.accent('✓ Opening ', true),
+        { text: PORTFOLIO_DATA.social.portfolio, color: 'secondary', url: PORTFOLIO_DATA.social.portfolio },
+        text.accent(' in a new tab...\n', true),
       ]
     );
     return { content: output, error: false };
