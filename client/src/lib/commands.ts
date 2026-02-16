@@ -29,11 +29,11 @@ const PORTFOLIO_DATA = {
   name: 'Vinícius Manoel Ribeiro',
   email: 'viniciusmanoel@duck.com',
   about: {
-    description: `I'm a passionate full-stack developer with expertise in modern
-web technologies. I love creating elegant solutions to complex
-problems and building beautiful, performant applications.`,
-    skills: 'React, TypeScript, Node.js, Python, DevOps',
-    location: 'São Paulo, Brazil',
+    description: `I'm a PhD student in Computer Science, specializing in Biotechnology 
+    with expertise in modern technologies. I love creating elegant solutions to complex
+    problems and building beautiful, performant applications.`,
+    skills: 'Python, C++, Rust, JavaScript, Go, Ruby',
+    location: 'Brasília, Brazil',
   },
   social: {
     github: 'https://github.com/vncsmnl',
@@ -44,29 +44,30 @@ problems and building beautiful, performant applications.`,
   },
   projects: [
     {
-      name: 'Project Alpha',
-      description: 'A real-time collaboration platform built with React and WebSockets',
-      link: 'https://github.com/yourusername/project-alpha',
+      name: 'astar_msa_rust',
+      description: 'PA-Star is a software that performs a parallel A-Star search to solve the Multiple Sequence Alignment (MSA) problem.',
+      link: 'https://github.com/vncsmnl/astar_msa_rust',
     },
     {
-      name: 'Project Beta',
-      description: 'Machine learning model deployment dashboard using FastAPI',
-      link: 'https://github.com/yourusername/project-beta',
+      name: 'pa-star-rv',
+      description: 'An interactive 3D visualization tool for analyzing execution logs from the PA-Star (Parallel A-Star) algorithm applied to the Multiple Sequence Alignment (MSA) problem.',
+      link: 'https://github.com/vncsmnl/pa-star-rv',
     },
     {
-      name: 'Project Gamma',
-      description: 'Mobile app for task management with offline-first architecture',
-      link: 'https://github.com/yourusername/project-gamma',
+      name: 'msa_app',
+      description: 'A web-based interface for running Multiple Sequence Alignment (MSA) using A-Star and PA-Star algorithms.',
+      link: 'https://github.com/vncsmnl/msa_app',
     },
   ],
   stack: [
-    { category: 'Frontend', tech: 'React 19, TypeScript, Tailwind CSS, Framer Motion' },
-    { category: 'Backend', tech: 'Node.js, Express, FastAPI, Python' },
-    { category: 'Database', tech: 'PostgreSQL, MongoDB, Redis' },
-    { category: 'DevOps', tech: 'Docker, GitHub Actions, AWS, Vercel' },
-    { category: 'Tools', tech: 'Git, VS Code, Figma, Postman' },
+    { category: 'Frontend', tech: 'React, TypeScript, Tailwind CSS' },
+    { category: 'Backend', tech: 'Node.js, Bun, FastAPI, Flask' },
+    { category: 'Frameworks', tech: 'LangChain, CrewAI, OpenAI API, Hugging Face' },
+    { category: 'Database', tech: 'PostgreSQL, SQLite, FAISS' },
+    { category: 'DevOps', tech: 'Docker, GitHub Actions, AWS, Kubernetes' },
+    { category: 'Tools', tech: 'Git, Latex, Ollama, ' },
   ],
-  resume: 'https://vinicius.is-a.dev/cv/',
+  resume: 'https://vinicius.is-a.dev/cv/pdf',
 };
 
 const commands: Record<string, (args: string[]) => Promise<CommandOutput>> = {
@@ -172,7 +173,7 @@ const commands: Record<string, (args: string[]) => Promise<CommandOutput>> = {
     const output = combine(
       createHeader('MY BLOG'),
       [
-        text.default('Coming soon! Check back later for articles about web\n'),
+        text.default('Check my articles about web\n'),
         text.default('development, best practices, and tech insights.\n\n'),
       ],
       createLink('Blog:', 'https://vini.thedev.id/blog/')
@@ -184,7 +185,7 @@ const commands: Record<string, (args: string[]) => Promise<CommandOutput>> = {
     const output = combine(
       createHeader('YOUTUBE VIDEOS'),
       [
-        text.default('Coming soon! Subscribe to my channel for tutorials and\n'),
+        text.default('Subscribe to my channel for tutorials and\n'),
         text.default('tech content.\n\n'),
       ],
       createLink('YouTube:', 'https://youtube.com/@vncsmnl')
@@ -207,7 +208,7 @@ const commands: Record<string, (args: string[]) => Promise<CommandOutput>> = {
     const output = combine(
       createHeader('RESUME'),
       createLink('Download:', PORTFOLIO_DATA.resume),
-      createLink('View online:', 'https://vini.thedev.id')
+      createLink('View online:', 'https://vinicius.is-a.dev/cv/')
     );
     return { content: output, error: false };
   },
