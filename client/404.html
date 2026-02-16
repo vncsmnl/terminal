@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecting...</title>
+    <script>
+        // GitHub Pages SPA redirect handler
+        // This script captures the current URL and redirects to index.html
+        // with the path encoded in the query string
+        (function () {
+            var pathSegmentsToKeep = 1; // Change to 0 if deploying to root, 1 for /terminal/
+
+            var l = window.location;
+            var redirect = l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+                l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/') + '/?/' +
+                l.pathname.slice(1).split('/').slice(pathSegmentsToKeep).join('/').replace(/&/g, '~and~') +
+                (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
+                l.hash;
+
+            window.location.replace(redirect);
+        })();
+    </script>
+</head>
+
+<body>
+    <noscript>
+        <p>This page requires JavaScript to redirect properly.</p>
+        <p><a href="/">Go to homepage</a></p>
+    </noscript>
+</body>
+
+</html>
