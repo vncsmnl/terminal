@@ -54,14 +54,34 @@ export function TerminalOutput({ line }: TerminalOutputProps) {
    * Render formatted output (array of TextSegments)
    */
   const renderFormattedOutput = (content: FormattedOutput) => {
-    return content.map((segment: TextSegment, idx: number) => (
-      <span
-        key={idx}
-        className={`${getColorClass(segment.color)} ${segment.bold ? 'font-bold' : ''}`}
-      >
-        {segment.text}
-      </span>
-    ));
+    return content.map((segment: TextSegment, idx: number) => {
+      const className = `${getColorClass(segment.color)} ${segment.bold ? 'font-bold' : ''}`;
+
+      // Render as a clickable link if URL is present
+      if (segment.url) {
+        return (
+          <a
+            key={idx}
+            href={segment.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`${className} hover:underline cursor-pointer`}
+          >
+            {segment.text}
+          </a>
+        );
+      }
+
+      // Otherwise render as a span
+      return (
+        <span
+          key={idx}
+          className={className}
+        >
+          {segment.text}
+        </span>
+      );
+    });
   };
 
   /**

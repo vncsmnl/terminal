@@ -18,6 +18,7 @@ export interface TextSegment {
   text: string;
   color?: TerminalColor;
   bold?: boolean;
+  url?: string;
 }
 
 export type FormattedOutput = TextSegment[];
@@ -110,7 +111,7 @@ export function createEntry(label: string, value: string, valueColor: TerminalCo
 export function createLink(label: string, url: string): FormattedOutput {
   return [
     text.primary(label.padEnd(14)),
-    text.secondary(url),
+    { text: url, color: 'secondary', url },
     text.default('\n'),
   ];
 }
@@ -138,7 +139,7 @@ export function createListItem(
 
   if (link) {
     output.push(text.muted('    🔗 '));
-    output.push(text.secondary(link));
+    output.push({ text: link, color: 'secondary', url: link });
     output.push(text.default('\n'));
   }
 

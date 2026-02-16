@@ -174,9 +174,8 @@ const commands: Record<string, (args: string[]) => Promise<CommandOutput>> = {
       [
         text.default('Coming soon! Check back later for articles about web\n'),
         text.default('development, best practices, and tech insights.\n\n'),
-        text.primary('Blog: ', true),
-        text.secondary('https://vini.thedev.id/blog/\n'),
-      ]
+      ],
+      createLink('Blog:', 'https://vini.thedev.id/blog/')
     );
     return { content: output, error: false };
   },
@@ -187,9 +186,8 @@ const commands: Record<string, (args: string[]) => Promise<CommandOutput>> = {
       [
         text.default('Coming soon! Subscribe to my channel for tutorials and\n'),
         text.default('tech content.\n\n'),
-        text.primary('YouTube: ', true),
-        text.secondary('https://youtube.com/@vncsmnl\n'),
-      ]
+      ],
+      createLink('YouTube:', 'https://youtube.com/@vncsmnl')
     );
     return { content: output, error: false };
   },
@@ -199,9 +197,8 @@ const commands: Record<string, (args: string[]) => Promise<CommandOutput>> = {
       createHeader('SPOTIFY PODCASTS'),
       [
         text.default('Coming soon! Listen to my podcast episodes on Spotify.\n\n'),
-        text.primary('Spotify: ', true),
-        text.secondary('https://spotify.com/vncsmnl\n'),
-      ]
+      ],
+      createLink('Spotify:', 'https://spotify.com/vncsmnl')
     );
     return { content: output, error: false };
   },
@@ -209,12 +206,8 @@ const commands: Record<string, (args: string[]) => Promise<CommandOutput>> = {
   resume: async () => {
     const output = combine(
       createHeader('RESUME'),
-      [
-        text.primary('Download my resume: ', true),
-        text.secondary(PORTFOLIO_DATA.resume + '\n\n'),
-        text.primary('Or view it online at: ', true),
-        text.secondary('https://vini.thedev.id\n'),
-      ]
+      createLink('Download:', PORTFOLIO_DATA.resume),
+      createLink('View online:', 'https://vini.thedev.id')
     );
     return { content: output, error: false };
   },
